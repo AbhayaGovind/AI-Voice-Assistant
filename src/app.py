@@ -2,7 +2,6 @@
 
 
 import server
-
 from ai_assistant import ai_singleton
 
 if ai_singleton.is_initialized():
@@ -13,10 +12,4 @@ else:
 
 print(f"Starting server with AI Assistant: {assistant.name}")
 
-server.app.run(
-    host='0.0.0.0', 
-    port=5000,
-    debug=True,
-    threaded=True,
-    use_reloader=False
-)
+server.app.run(host="0.0.0.0", port=5000, debug=True, threaded=True, use_reloader=False)

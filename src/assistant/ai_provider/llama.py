@@ -1,14 +1,16 @@
 import os
-import requests
 from typing import Optional
+
+import requests
 
 # Custom Imports
 try:
-    from .ai_providers import AIProvider, AiProviderList, AiProviderStatus
+    from .ai_providers import AIProvider, AiProviderStatus
 except ImportError:
-    from ai_providers import AIProvider, AiProviderList, AiProviderStatus
+    from ai_providers import AIProvider, AiProviderStatus
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+
 
 class Llama(AIProvider):
     def __init__(self, token: Optional[str] = GITHUB_TOKEN):
@@ -22,7 +24,7 @@ class Llama(AIProvider):
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "X-GitHub-Api-Version": "2023-11-28"
+            "X-GitHub-Api-Version": "2023-11-28",
         }
         self.add_message("system", "You are a helpful AI voice/text assistant")
 
@@ -35,9 +37,13 @@ class Llama(AIProvider):
         try:
             payload = {
                 "model": self.model,
-                "messages": message if isinstance(message, list) else [{"role": "user", "content": message}],
+                "messages": (
+                    message
+                    if isinstance(message, list)
+                    else [{"role": "user", "content": message}]
+                ),
                 "max_tokens": self._max_tokens,
-                "temperature": self._temperature
+                "temperature": self._temperature,
             }
 
             response = requests.post(self.url, headers=self.headers, json=payload)
@@ -45,7 +51,7 @@ class Llama(AIProvider):
             data = response.json()
 
             assistant_response = data["choices"][0]["message"]["content"]
-            
+
             if isinstance(message, list):
                 self.add_message("assistant", assistant_response)
 

@@ -1,27 +1,22 @@
-from .config.config import app
-from .utils.helpers import init_cors, check_health
-from .controllers.user_controller import UserController
-from .controllers.question_controller import QuestionController
-from .controllers.api_controller import AssistantAPIController
-from .handlers.request_handler import CORSHandler
-from .database.db_helper import DatabaseHelper
-from .models.models import User, QuestionResponse
-
-from .handlers.request_handler import ResponseHandler
-
-
 # Logging
 import logging
+
+from .config.config import app
+from .controllers.api_controller import AssistantAPIController
+from .controllers.question_controller import QuestionController
+from .controllers.user_controller import UserController
+from .database.db_helper import DatabaseHelper
+from .handlers.request_handler import CORSHandler, ResponseHandler
+from .utils.helpers import check_health, init_cors
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 # Views
-from .views import index_page
 
 # assistant
 from ai_assistant import ai_singleton
-
 
 # Initialize CORS
 init_cors(app)
@@ -42,10 +37,8 @@ else:
     logger.info(" AI Assistant singleton initialized on server startup")
 
 
-
-
 # Routes
-@app.route('/health')
+@app.route("/health")
 def health_check():
     """
     Health check endpoint
@@ -73,8 +66,9 @@ def health_check():
 def handle_preflight():
     return CORSHandler.handle_preflight()
 
+
 # User routes
-@app.route('/users', methods=['POST'])
+@app.route("/users", methods=["POST"])
 def create_user():
     """
     Create a new user
@@ -130,10 +124,11 @@ def create_user():
                   example: true
                 username:
                   type: string
-                  example: "aruncs"    """
+                  example: "aruncs" """
     return UserController.create_user()
 
-@app.route('/users', methods=['GET'])
+
+@app.route("/users", methods=["GET"])
 def get_users():
     """
     Get all users
@@ -168,7 +163,8 @@ def get_users():
     """
     return UserController.get_users()
 
-@app.route('/users/<user_id>', methods=['GET'])
+
+@app.route("/users/<user_id>", methods=["GET"])
 def get_user(user_id):
     """
     Get a specific user by ID
@@ -218,7 +214,8 @@ def get_user(user_id):
     """
     return UserController.get_user(user_id)
 
-@app.route('/users/<user_id>', methods=['PUT'])
+
+@app.route("/users/<user_id>", methods=["PUT"])
 def update_user(user_id):
     """
     Update an existing user
@@ -280,7 +277,8 @@ def update_user(user_id):
     """
     return UserController.update_user(user_id)
 
-@app.route('/users/<user_id>', methods=['DELETE'])
+
+@app.route("/users/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
     """
     Delete a user
@@ -319,7 +317,8 @@ def delete_user(user_id):
     """
     return UserController.delete_user(user_id)
 
-@app.route('/users/<user_id>/questions', methods=['GET'])
+
+@app.route("/users/<user_id>/questions", methods=["GET"])
 def get_user_questions(user_id):
     """
     Get all questions asked by a specific user
@@ -369,8 +368,9 @@ def get_user_questions(user_id):
     """
     return UserController.get_user_questions(user_id)
 
+
 # Question routes
-@app.route('/questions', methods=['POST'])
+@app.route("/questions", methods=["POST"])
 def create_question_response():
     """
     Create a new question-response record
@@ -443,7 +443,8 @@ def create_question_response():
     """
     return QuestionController.create_question_response()
 
-@app.route('/questions', methods=['GET'])
+
+@app.route("/questions", methods=["GET"])
 def get_question_responses():
     """
     Get all question-response records
@@ -496,7 +497,8 @@ def get_question_responses():
     """
     return QuestionController.get_question_responses()
 
-@app.route('/questions/<response_id>', methods=['GET'])
+
+@app.route("/questions/<response_id>", methods=["GET"])
 def get_question_response(response_id):
     """
     Get a specific question-response record by ID
@@ -544,7 +546,8 @@ def get_question_response(response_id):
     """
     return QuestionController.get_question_response(response_id)
 
-@app.route('/questions/<response_id>', methods=['DELETE'])
+
+@app.route("/questions/<response_id>", methods=["DELETE"])
 def delete_question_response(response_id):
     """
     Delete a question-response record
@@ -583,8 +586,9 @@ def delete_question_response(response_id):
     """
     return QuestionController.delete_question_response(response_id)
 
+
 # API routes
-@app.route('/api/example-questions', methods=['GET'])
+@app.route("/api/example-questions", methods=["GET"])
 def get_example_questions():
     """
     Get example questions for the assistant
@@ -618,7 +622,8 @@ def get_example_questions():
     """
     return QuestionController.get_example_questions()
 
-@app.route('/api/ask', methods=['POST'])
+
+@app.route("/api/ask", methods=["POST"])
 def ask_assistant():
     """
     Ask a question to the AI assistant
@@ -673,7 +678,8 @@ def ask_assistant():
     """
     return AssistantAPIController.ask_assistant()
 
-@app.route('/api/conversation/<user_id>', methods=['GET'])
+
+@app.route("/api/conversation/<user_id>", methods=["GET"])
 def get_user_conversation(user_id):
     """
     Get conversation history for a specific user
@@ -733,7 +739,8 @@ def get_user_conversation(user_id):
     """
     return AssistantAPIController.get_user_conversation(user_id)
 
-@app.route('/api/assistant/status', methods=['GET'])
+
+@app.route("/api/assistant/status", methods=["GET"])
 def get_assistant_status():
     """
     Get the current status of the AI assistant
@@ -763,7 +770,8 @@ def get_assistant_status():
     """
     return AssistantAPIController.get_assistant_status()
 
-@app.route('/api/assistant/reset', methods=['POST'])
+
+@app.route("/api/assistant/reset", methods=["POST"])
 def reset_assistant():
     """
     Reset the AI assistant state
@@ -803,8 +811,9 @@ def reset_assistant():
     """
     return AssistantAPIController.reset_assistant()
 
+
 # Stats route
-@app.route('/stats', methods=['GET'])
+@app.route("/stats", methods=["GET"])
 def get_stats():
     """
     Get system statistics
@@ -860,17 +869,18 @@ def get_stats():
     try:
         stats = DatabaseHelper.get_stats()
         assistant_status = assistant.get_status()
-        stats['assistant_status'] = assistant_status
+        stats["assistant_status"] = assistant_status
         logger.info("Statistics retrieved successfully")
-        return ResponseHandler.success('Statistics retrieved successfully', stats)
+        return ResponseHandler.success("Statistics retrieved successfully", stats)
     except Exception as e:
         logger.error(f"Error retrieving statistics: {e}")
         return ResponseHandler.server_error(str(e))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print("Starting AI Assistant Unified Server...")
     print("This server provides both API and UI functionality")
     print("Available on: http://localhost:5000")
     print("API endpoints: http://localhost:5000/api/")
     print("Health check: http://localhost:5000/health")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

@@ -1,8 +1,7 @@
 import speech_recognition as sr
 
 # Custom Imports
-from .stt import STT, STTState 
-
+from .stt import STT, STTState
 
 
 class GoogleSTT(STT):
@@ -16,12 +15,13 @@ class GoogleSTT(STT):
         # Type is infered as int for the method , fix it later , {contribute}
         self.adjust_for_ambient_noise_duration = 0.5
         self.recognizer_pause_threshold = 0.5
-        
+
         self.state = STTState.IDLE
 
     @property
     def name(self) -> str:
         return "Google Speech-to-Text"
+
     def hear(self):
         super().hear()
         # Change state to listening
@@ -29,16 +29,20 @@ class GoogleSTT(STT):
             with sr.Microphone() as source:
                 # Adjust for ambient noise
                 self.state = STTState.LISTENING
-                self.recognizer.adjust_for_ambient_noise(source, duration=self.adjust_for_ambient_noise_duration)
+                self.recognizer.adjust_for_ambient_noise(
+                    source, duration=self.adjust_for_ambient_noise_duration
+                )
                 self.recognizer.pause_threshold = self.recognizer_pause_threshold
                 print("🎤 Listening... (speak now)")
                 # Listen with timeout
-                audio = self.recognizer.listen(source, timeout=self.timeout_seconds, phrase_time_limit=6)
+                audio = self.recognizer.listen(
+                    source, timeout=self.timeout_seconds, phrase_time_limit=6
+                )
 
             try:
                 # Use Google's speech recognition
                 """TODO: Fix this : Attribute "recognize_legacy" is unknown"""
-                command = self.recognizer.recognize_google(audio, language='en-US')
+                command = self.recognizer.recognize_google(audio, language="en-US")
                 print(f"✅ You said: {command}")
                 self.state = STTState.PROCESSING
                 self.text = command.lower()
@@ -67,6 +71,6 @@ if __name__ == "__main__":
             print(f"Recognized Text: {text}")
         else:
             print("No valid speech recognized.")
-            
+
         print(stt)
         print("-" * 30)

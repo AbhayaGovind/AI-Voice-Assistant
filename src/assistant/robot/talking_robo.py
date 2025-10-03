@@ -1,20 +1,23 @@
-from typing import  Dict, Any
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict
 
 # Custom Imports
 try:
+    from .answer_helper.answer_helper import AnswerHelper
     from .bare_robo import BARE_ROBO
-    from .answer_helper.answer_helper import AnswerHelper    
     from .question_helper.question_helper import QuestionHelper
 except ImportError:
     from bare_robo import BARE_ROBO
     from answer_helper.answer_helper import AnswerHelper
     from question_helper.question_helper import QuestionHelper
 
-import threading, time
+import threading
+
+
 class VoiceType(Enum):
     """Enumeration of available voice types"""
+
     DEFAULT = "default"
     MALE = "male"
     FEMALE = "female"
@@ -22,9 +25,9 @@ class VoiceType(Enum):
     NATURAL = "natural"
 
 
-
 class TalkingRoboState(Enum):
     """Enumeration of conversation states"""
+
     """ When the robot is first initialized """
     INITIALIZED = "initialized"
     """ When the robot is waiting for user input """
@@ -38,16 +41,17 @@ class TalkingRoboState(Enum):
     ERROR = "error"
 
 
-
-
 class Language(Enum):
     """Enumeration of supported languages"""
+
     ENGLISH_US = "en-US"
     MALAYALAM = "ml-IN"
+
 
 @dataclass
 class VoiceConfig:
     """Configuration class for voice settings"""
+
     voice_type: VoiceType = VoiceType.DEFAULT
     language: Language = Language.ENGLISH_US
     speed: float = 1.0
@@ -57,12 +61,13 @@ class VoiceConfig:
     def to_dict(self) -> Dict[str, Any]:
         """Convert voice config to dictionary"""
         return {
-            'voice_type': self.voice_type.value,
-            'language': self.language.value,
-            'speed': self.speed,
-            'pitch': self.pitch,
-            'volume': self.volume
+            "voice_type": self.voice_type.value,
+            "language": self.language.value,
+            "speed": self.speed,
+            "pitch": self.pitch,
+            "volume": self.volume,
         }
+
 
 class SPEAKING_ROBOT(BARE_ROBO):
     """
@@ -71,19 +76,19 @@ class SPEAKING_ROBOT(BARE_ROBO):
     Extends BARE_ROBO with voice synthesis and speech functionality.
     """
 
-    def __init__(self,
-                 answer_helper: AnswerHelper = AnswerHelper() ,
-                 question_helper: QuestionHelper = QuestionHelper(),
-                 voice_config: VoiceConfig = VoiceConfig(), # Use Default Config
-                 name: str = "Speaking Robot",
-                 ):
+    def __init__(
+        self,
+        answer_helper: AnswerHelper = AnswerHelper(),
+        question_helper: QuestionHelper = QuestionHelper(),
+        voice_config: VoiceConfig = VoiceConfig(),  # Use Default Config
+        name: str = "Speaking Robot",
+    ):
         super().__init__(name)
         self._state = TalkingRoboState.INITIALIZED
         self.question = ""
-        self.voice_config = voice_config 
+        self.voice_config = voice_config
         self.answer_helper = answer_helper
-        self.question_helper = question_helper 
-
+        self.question_helper = question_helper
 
     def update_state(self):
         """Update the status of the robot"""
@@ -93,13 +98,14 @@ class SPEAKING_ROBOT(BARE_ROBO):
                 self.state = TalkingRoboState.SPEAKING
             else:
                 self.state = TalkingRoboState.IDLE
-    def listen(self):   
+
+    def listen(self):
         self.state = TalkingRoboState.LISTENING
         """Listen for user input with timeout"""
         self.question_helper.hear()
         self.question = self.question_helper.question
-     
-    def speak(self,string: str = "") -> None:
+
+    def speak(self, string: str = "") -> None:
         """Talking Robot Has no processing capability"""
         """So it speaks the same"""
         self.state = TalkingRoboState.SPEAKING
@@ -112,7 +118,6 @@ class SPEAKING_ROBOT(BARE_ROBO):
         except Exception as e:
             print(f"Error during speaking: {e}")
             self.state = TalkingRoboState.ERROR
-        
 
     def _perform_speech(self) -> None:
         """
@@ -137,32 +142,38 @@ class SPEAKING_ROBOT(BARE_ROBO):
     def get_status(self) -> Dict[str, Any]:
         """Get the current status including voice information"""
         status = super().get_status()
-        status.update({
-            'voice_config': self.get_voice_config(),
-            'speaking': self.is_speaking,
-        })
+        status.update(
+            {
+                "voice_config": self.get_voice_config(),
+                "speaking": self.is_speaking,
+            }
+        )
         return status
+
     @property
     def robot_state(self) -> TalkingRoboState:
-        if self._state == TalkingRoboState.SPEAKING and self.answer_helper.is_answering():
+        if (
+            self._state == TalkingRoboState.SPEAKING
+            and self.answer_helper.is_answering()
+        ):
             return TalkingRoboState.SPEAKING
         return self._state
+
     @robot_state.setter
     def robot_state(self, value: TalkingRoboState) -> None:
         self._state = value
-    
+
     @property
     def get_speaking_thread(self) -> threading.Thread | None:
         return self.answer_helper.tts.thread
-    
+
     @property
     def question(self) -> str:
         return self._question
+
     @question.setter
     def question(self, value: str) -> None:
         self._question = value
-              
-
 
     @property
     def voice_type(self) -> VoiceType:
@@ -210,7 +221,8 @@ def test_talking_robot():
         voice_config=voice_config,
         answer_helper=answer_helper,
         question_helper=question_helper,
-        name="Test Robot")
+        name="Test Robot",
+    )
     # robot.listen()
     """Simulate a question"""
     robot.question = "Hello, how are you?"
@@ -219,10 +231,9 @@ def test_talking_robot():
     robot.speak()
     if robot.get_speaking_thread:
         robot.get_speaking_thread.join()  # Wait for speaking to finish
-    
+
     print(f"{robot.name} is {robot.state.value}")
-    
-    
+
 
 if __name__ == "__main__":
     test_talking_robot()

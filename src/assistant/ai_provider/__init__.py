@@ -1,10 +1,9 @@
-from .ai_providers import AIProvider # Import the base class
-from .ollama import Ollama
-from .github_gpt_5 import GPT_5
-from .gemini import Gemini
-from .llama import Llama
+from .ai_providers import AIProvider  # Import the base class
 from .cohere_api import CohereAPI
-
+from .gemini import Gemini
+from .github_gpt_5 import GPT_5
+from .llama import Llama
+from .ollama import Ollama
 
 __version__ = "0.1.0"
 

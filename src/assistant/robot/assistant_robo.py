@@ -1,4 +1,3 @@
-
 """
 Robot Types Module
 
@@ -13,29 +12,24 @@ Hierarchy:
 """
 
 from abc import ABC, abstractmethod
-import speech_recognition as sr
-from typing import  Dict, Any
 from enum import Enum
 
 # Custom Imports
 try:
-    from .answer_helper.answer_helper import AnswerHelper
-    from .question_helper.question_helper import QuestionHelper
     from .talking_robo import SPEAKING_ROBOT
 except ImportError:
-    from answer_helper.answer_helper import AnswerHelper
-    from question_helper.question_helper import QuestionHelper
     from talking_robo import SPEAKING_ROBOT
+
 
 class AssistantStates(Enum):
     """States for the Assistant"""
+
     IDLE = "idle"
     LISTENING = "listening"
     PROCESSING = "processing"
     RESPONDING = "responding"
     ERROR = "error"
     WAITING = "waiting"
-
 
 
 class ASSISTANT(ABC, SPEAKING_ROBOT):
@@ -46,12 +40,13 @@ class ASSISTANT(ABC, SPEAKING_ROBOT):
     It combines speaking capabilities with listening and intelligent response features.
     """
 
-    def __init__(self, 
+    def __init__(
+        self,
         name: str = "AI Assistant",
-        ):
+    ):
         super().__init__(
             name=name,
-            )
+        )
         self._conversation_history = []
         self._assistant_state = AssistantStates.IDLE
         self._user_name = ""
@@ -63,7 +58,6 @@ class ASSISTANT(ABC, SPEAKING_ROBOT):
     """
     TODO: Implement this after , v0.1.0 Release.
     """
-    
 
     def listen(self):
         super().listen()
@@ -72,22 +66,25 @@ class ASSISTANT(ABC, SPEAKING_ROBOT):
         self.question_helper.hear()
         self.state = AssistantStates.IDLE
 
-    @property 
+    @property
     def query(self) -> str:
         return self.question_helper.question
+
     @query.setter
     def query(self, value: str) -> None:
         self.question_helper.question = value
-    @abstractmethod 
-    def answer(self):...
+
+    @abstractmethod
+    def answer(self): ...
     @abstractmethod
     def process_command(self):
         self.state = AssistantStates.PROCESSING
-        return 
+        return
+
     @abstractmethod
-    def greet(self) -> None:...
-    
-    @property 
+    def greet(self) -> None: ...
+
+    @property
     def assistant_state(self) -> AssistantStates:
         return self._state
 
@@ -95,16 +92,20 @@ class ASSISTANT(ABC, SPEAKING_ROBOT):
     def assistant_state(self, state: AssistantStates) -> None:
         print(f"Assistant Robo State {state.value}")  # Use the parameter directly
         self._state = state
-        
+
     def is_listening(self) -> bool:
-        return self.assistant_state == AssistantStates.LISTENING or \
-               self.question_helper.is_listening()
+        return (
+            self.assistant_state == AssistantStates.LISTENING
+            or self.question_helper.is_listening()
+        )
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}(" \
-               f"name='{self.name}', " \
-               f"listening={self.is_listening()}, " \
-               f"state={self.assistant_state.value})"
+        return (
+            f"{self.__class__.__name__}("
+            f"name='{self.name}', "
+            f"listening={self.is_listening()}, "
+            f"state={self.assistant_state.value})"
+        )
 
     # @property
     # def wake_word(self) -> str:
@@ -147,9 +148,6 @@ class ASSISTANT(ABC, SPEAKING_ROBOT):
     #     if value < 1:
     #         raise ValueError("Timeout must be at least 1 second")
     #     self._timeout_seconds = value
-
-
-
 
     # def add_to_history(self, user_input: str, assistant_response: str) -> None:
     #     """Add an interaction to the conversation history"""
@@ -195,13 +193,13 @@ class ASSISTANT(ABC, SPEAKING_ROBOT):
     #         r"call me (\w+)",
     #         r"(\w+) is my name"
     #     ]
-        
+
     #     for pattern in name_patterns:
     #         match = re.search(pattern, query, re.IGNORECASE)
     #         if match:
     #             self.user_name = match.group(1).capitalize()
     #             return True
-        
+
     #     # If no pattern matches but it seems like they're responding to name question
     #     if not self.user_name and any(word in query for word in ["name", "call", "i'm", "i am"]):
     #         words = query.split()
@@ -210,7 +208,7 @@ class ASSISTANT(ABC, SPEAKING_ROBOT):
     #             if len(potential_name) > 1 and potential_name.isalpha():
     #                 self.user_name = potential_name
     #                 return True
-        
+
     #     return False
 
     # def tell_time(self) -> str:
@@ -267,31 +265,25 @@ class ASSISTANT(ABC, SPEAKING_ROBOT):
     #         'timeout_seconds': self.timeout_seconds
     #     })
     #     return status
-    
+
+
 def test_assistant_robo():
     from answer_helper.answer_helper import AnswerHelper
     from question_helper.question_helper import QuestionHelper
+
     answer_helper = AnswerHelper()
     question_helper = QuestionHelper()
 
     class TestAssistant(ASSISTANT):
-        def __init__(
-            self, 
-            answer_helper, 
-            question_helper, 
-            name = "AI Assistant"
-            
-                ):
+        def __init__(self, answer_helper, question_helper, name="AI Assistant"):
             super().__init__(
-                answer_helper=answer_helper, 
-                question_helper=question_helper, 
-                name=name
-                )
-        
+                answer_helper=answer_helper, question_helper=question_helper, name=name
+            )
+
         def answer(self) -> None:
             self.state = AssistantStates.RESPONDING
             self.answer_helper.speak(self.question)
-        
+
         def process_command(self):
             self.state = AssistantStates.PROCESSING
             # Simulate processing
@@ -300,7 +292,7 @@ def test_assistant_robo():
             else:
                 self.question = "No input detected."
             return
-        
+
         def greet(self) -> None:
             super().state = AssistantStates.RESPONDING
             self.answer_helper.speak("Hello, I am your test assistant.")
@@ -309,11 +301,12 @@ def test_assistant_robo():
     assistant = TestAssistant(
         name="Test Assistant",
         answer_helper=answer_helper,
-        question_helper=question_helper
+        question_helper=question_helper,
     )
 
     print(assistant)
     print(assistant.get_status())
-    
+
+
 if __name__ == "__main__":
     test_assistant_robo()

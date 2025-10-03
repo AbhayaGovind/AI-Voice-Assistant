@@ -1,5 +1,4 @@
-import speech_recognition as sr
-from typing import Optional, Dict, Any
+from typing import Any, Dict
 
 
 class BARE_ROBO:
@@ -43,9 +42,9 @@ class BARE_ROBO:
     def get_status(self) -> Dict[str, Any]:
         """Get the current status of the robot"""
         return {
-            'name': self.name,
-            'active': self.is_active,
-            'type': self.__class__.__name__
+            "name": self.name,
+            "active": self.is_active,
+            "type": self.__class__.__name__,
         }
 
     def __str__(self) -> str:
@@ -53,4 +52,3 @@ class BARE_ROBO:
 
     def __repr__(self) -> str:
         return self.__str__()
-

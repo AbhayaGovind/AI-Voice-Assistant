@@ -7,44 +7,44 @@ response generation, and conversation management.
 """
 
 import re
-from enum import Enum 
+from enum import Enum
 
 from .ai_provider import AIProvider, Ollama
-from .robot.assistant_robo import ASSISTANT
 from .files.files import Files
+from .robot.assistant_robo import ASSISTANT
 
 EXAMPLE_QUESTIONS = [
-        {
-            "id": 1,
-            "category": "General",
-            "question": "What time is it?",
-            "description": "Ask for the current time"
-        },
-        {
-            "id": 2,
-            "category": "General",
-            "question": "What's the date today?",
-            "description": "Ask for today's date"
-        },
-        {
-            "id": 3,
-            "category": "General",
-            "question": "What day is it?",
-            "description": "Ask for the current day of the week"
-        },
-        {
-            "id": 4,
-            "category": "Personal",
-            "question": "How are you?",
-            "description": "General greeting and wellbeing check"
-        },
-        {
-            "id": 5,
-            "category": "Knowledge",
-            "question": "Tell me about artificial intelligence",
-            "description": "Learn about AI concepts"
-        }
-    ]
+    {
+        "id": 1,
+        "category": "General",
+        "question": "What time is it?",
+        "description": "Ask for the current time",
+    },
+    {
+        "id": 2,
+        "category": "General",
+        "question": "What's the date today?",
+        "description": "Ask for today's date",
+    },
+    {
+        "id": 3,
+        "category": "General",
+        "question": "What day is it?",
+        "description": "Ask for the current day of the week",
+    },
+    {
+        "id": 4,
+        "category": "Personal",
+        "question": "How are you?",
+        "description": "General greeting and wellbeing check",
+    },
+    {
+        "id": 5,
+        "category": "Knowledge",
+        "question": "Tell me about artificial intelligence",
+        "description": "Learn about AI concepts",
+    },
+]
 
 
 class AssistantStatusErr(Enum):
@@ -53,6 +53,8 @@ class AssistantStatusErr(Enum):
     AUTH = "authentication error"
     ERR = "general error"
     NONE = "no error"
+
+
 class AssistantStatus(Enum):
     IDLE = "idle"
     LISTENING = "listening"
@@ -64,6 +66,7 @@ class AssistantStatus(Enum):
 
 class ConversationStates(Enum):
     """Enumeration of conversation states"""
+
     """ When the robot is first initialized """
     INITIALIZED = "initialized"
     """ When the robot is waiting for user input """
@@ -86,10 +89,11 @@ class ConversationalAssistant(ASSISTANT):
     and conversation management.
     """
 
-    def __init__(self, 
-                ai_provider: AIProvider,
-                name: str = "Conversational Assistant",
-                ):
+    def __init__(
+        self,
+        ai_provider: AIProvider,
+        name: str = "Conversational Assistant",
+    ):
         super().__init__(
             name=name,
         )
@@ -177,11 +181,16 @@ class ConversationalAssistant(ASSISTANT):
         self._response = value
 
     def is_answering(self) -> bool:
-        _is_answering = self.answer_helper.is_answering() or self.state == ConversationStates.PROCESSING
+        _is_answering = (
+            self.answer_helper.is_answering()
+            or self.state == ConversationStates.PROCESSING
+        )
         return _is_answering
+
     @staticmethod
     def get_example_questions():
         return EXAMPLE_QUESTIONS
+
 
 def test():
     ai_provider = Ollama()  # Replace with a concrete implementation
@@ -196,4 +205,3 @@ def test():
     while assistant.is_answering():
         pass
     print("-" * 30)
-

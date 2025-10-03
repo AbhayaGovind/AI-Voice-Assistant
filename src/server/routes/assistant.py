@@ -1,7 +1,6 @@
-from flask import Blueprint, jsonify
 from logging import getLogger as get_logger
 
-
+from flask import Blueprint, jsonify
 
 # from .routes import device_list, home_page_view
 
@@ -12,12 +11,9 @@ logger = get_logger("api")
 assistant_bp = Blueprint("api", __name__)
 
 
-
 @assistant_bp.route("/api/health")
 def healthz():
     return jsonify({"ok": True}), 200
-
-
 
 
 # @api_bp.route("/api/devices", methods=["GET"])

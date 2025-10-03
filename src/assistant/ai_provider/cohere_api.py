@@ -8,6 +8,7 @@ try:
 except ImportError:
     from ai_providers import AIProvider, AiProviderList, AiProviderStatus
 
+
 class CohereAPI(AIProvider):
     def __init__(self, api_key: str = COHERE_API_KEY):
         super().__init__()
@@ -32,14 +33,14 @@ class CohereAPI(AIProvider):
                 # Cohere's chat API expects a single message string, so we'll format the conversation
                 formatted_messages = []
                 for msg in message:
-                    role = "Human" if msg['role'] == 'user' else "Assistant"
+                    role = "Human" if msg["role"] == "user" else "Assistant"
                     formatted_messages.append(f"{role}: {msg['content']}")
                 chat_message = "\n".join(formatted_messages)
 
             response = self.client.chat(
                 message=chat_message,
                 temperature=self._temperature,
-                max_tokens=self._max_tokens
+                max_tokens=self._max_tokens,
             )
 
             # Extract assistant's response
@@ -61,6 +62,7 @@ class CohereAPI(AIProvider):
         """Use the generic ask implementation from base class"""
         super().ask(prompt)
         return self._generic_ask(prompt)
+
 
 if __name__ == "__main__":
     print("🤖 Testing Cohere with Memory/Context")
@@ -92,6 +94,6 @@ if __name__ == "__main__":
     print()
     for obj in cohere_api.QandAs:
         print(obj.to_dict())
-    
+
     cohere_api.clear_messages()
     cohere_api.show_conversation_history()

@@ -1,7 +1,5 @@
 import os
-from pathlib import Path
 
-import dotenv
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.core.credentials import AzureKeyCredential
@@ -16,8 +14,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-token = os.getenv('GITHUB_GPT_5_TOKEN', '')
-
+token = os.getenv("GITHUB_GPT_5_TOKEN", "")
 
 
 class GPT_5(AIProvider):
@@ -37,7 +34,6 @@ class GPT_5(AIProvider):
             endpoint=self.endpoint,
             credential=AzureKeyCredential(self.token),
         )
-
 
     @property
     def name(self) -> str:

@@ -1,4 +1,3 @@
-import subprocess
 import requests
 
 # custom import
@@ -6,7 +5,8 @@ try:
     from .ai_providers import AIProvider, AiProviderList, AiProviderStatus
 except ImportError:
     from ai_providers import AIProvider, AiProviderList, AiProviderStatus
-    
+
+
 class Ollama(AIProvider):
     def __init__(self):
         super().__init__()
@@ -17,7 +17,7 @@ class Ollama(AIProvider):
     @property
     def name(self) -> str:
         return AiProviderList.OLLAMA.value
-    
+
     def _call_api(self, message: list[dict[str, str]] | str) -> str:
         """Implementation of the abstract _call_api method for Ollama"""
         try:
@@ -35,16 +35,14 @@ class Ollama(AIProvider):
                     "model": self.model,
                     "messages": ollama_messages,
                     "stream": False,
-                    "options": {
-                        "temperature": self.temperature
-                    }
+                    "options": {"temperature": self.temperature},
                 },
             )
             response.raise_for_status()
             data = response.json()
 
             # Add assistant's response to conversation history
-            assistant_response = data['message']['content']
+            assistant_response = data["message"]["content"]
             if isinstance(message, list):
                 self.add_message("assistant", assistant_response)
 
@@ -61,8 +59,9 @@ class Ollama(AIProvider):
         # Use generic ask for the actual API call
         return self._generic_ask(prompt)
 
+
 if __name__ == "__main__":
-    
+
     print(f"🤖 Testing {str(Ollama.name).capitalize()} with Memory/Context")
     print("=" * 50)
 
@@ -92,6 +91,6 @@ if __name__ == "__main__":
     # print()
     # for obj in ollama.QandAs:
     #     print(obj.to_dict())
-    
+
     # ollama.clear_messages()
     # ollama.show_conversation_history()
